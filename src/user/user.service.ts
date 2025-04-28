@@ -7,7 +7,6 @@ import { sign } from 'jsonwebtoken';
 import { JWT_SECRET } from '@app/config';
 import { UserResponse } from './types/userResponse.interface';
 import { LoginUserDto } from './dto/loginUser.dto';
-
 import { compare } from 'bcrypt';
 
 @Injectable()
@@ -41,10 +40,13 @@ export class UserService {
 
   buildUserResponse(user: UserEntity): UserResponse {
     delete user.password;
+
+    const { id, username, email } = user;
+
     return {
       user: {
         ...user,
-        token: this.generateJwt(user),
+        token: sign({ id, username, email }, JWT_SECRET),
       },
     };
   }
@@ -56,21 +58,10 @@ export class UserService {
 
     if (!user) throw new BadRequestException('invalid credentials');
 
-    const correctPassword = await compare(userCredentials.password, user.password);
+    const isCorrectPassword = await compare(userCredentials.password, user.password);
 
-    if (!correctPassword) throw new BadRequestException('invalid credentials');
+    if (!isCorrectPassword) throw new BadRequestException('invalid credentials');
 
     return user;
-  }
-
-  private generateJwt(user: UserEntity): string {
-    return sign(
-      {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      },
-      JWT_SECRET,
-    );
   }
 }
