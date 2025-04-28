@@ -1,11 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user-dto';
+import { CreateUserDto } from './dto/createUser.dto';
 import { UserEntity } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { JWT_SECRET } from '@app/config';
 import { UserResponse } from './types/userResponse.interface';
+import { LoginUserDto } from './dto/loginUser.dto';
+
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -48,6 +51,20 @@ export class UserService {
         token: this.generateJwt(user),
       },
     };
+  }
+
+  async login(userCredentials: LoginUserDto) {
+    const user = await this.userRepository.findOne({
+      where: { username: userCredentials.username },
+    });
+
+    if (!user) throw new BadRequestException('invalid credentials');
+
+    const correctPassword = compare(userCredentials.password, user.password);
+
+    if (!correctPassword) throw new BadRequestException('invalid credentials');
+
+    return user;
   }
 
   private generateJwt(user: UserEntity): string {
