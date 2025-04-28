@@ -26,15 +26,11 @@ export class UserService {
     ]);
 
     if (existingEmail) {
-      throw new BadRequestException(
-        `user with email ${createUserDto.email} already exists`,
-      );
+      throw new BadRequestException(`user with email ${createUserDto.email} already exists`);
     }
 
     if (existingUsername) {
-      throw new BadRequestException(
-        `user with name ${createUserDto.username} already exists`,
-      );
+      throw new BadRequestException(`user with name ${createUserDto.username} already exists`);
     }
 
     const newUser = new UserEntity();
@@ -60,7 +56,7 @@ export class UserService {
 
     if (!user) throw new BadRequestException('invalid credentials');
 
-    const correctPassword = compare(userCredentials.password, user.password);
+    const correctPassword = await compare(userCredentials.password, user.password);
 
     if (!correctPassword) throw new BadRequestException('invalid credentials');
 
