@@ -1,7 +1,7 @@
-import { ConnectionOptions } from 'typeorm';
-import { TagEntity } from './tag/tag.entity';
+import { DataSource } from 'typeorm';
+import { TagEntity } from '@app/tag/tag.entity';
 
-const ormConfig: ConnectionOptions = {
+export default new DataSource({
   type: 'postgres',
   host: 'localhost',
   port: 5432,
@@ -9,7 +9,6 @@ const ormConfig: ConnectionOptions = {
   password: 'admin',
   database: 'mediumclone',
   entities: [TagEntity],
-  synchronize: true,
-};
-
-export default ormConfig;
+  synchronize: false,
+  migrations: ['src/migrations/**/*{.ts,.js}'],
+});
