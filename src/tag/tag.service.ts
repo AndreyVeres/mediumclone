@@ -10,7 +10,7 @@ export class TagService {
     private readonly tagRepository: Repository<TagEntity>,
   ) {}
 
-  async findAll(): Promise<TagEntity[]> {
+  public async findAll(): Promise<TagEntity[]> {
     const tagsEntities = await this.tagRepository.find();
     return tagsEntities;
   }

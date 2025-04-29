@@ -17,7 +17,7 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+  public async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     const [existingEmail, existingUsername] = await Promise.all([
       this.userRepository.findOne({ where: { email: createUserDto.email } }),
       this.userRepository.findOne({
@@ -39,7 +39,7 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  buildUserResponse(user: UserEntity): UserResponse {
+  public buildUserResponse(user: UserEntity): UserResponse {
     delete user.password;
 
     const { id, username, email } = user;
@@ -52,7 +52,7 @@ export class UserService {
     };
   }
 
-  async login(userCredentials: LoginUserDto) {
+  public async login(userCredentials: LoginUserDto) {
     const user = await this.userRepository.findOne({
       where: { username: userCredentials.username },
     });
@@ -66,14 +66,14 @@ export class UserService {
     return user;
   }
 
-  async findById(id: number): Promise<UserEntity> {
+  public async findById(id: number): Promise<UserEntity> {
     return await this.userRepository.findOne({ where: { id } });
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
+  public async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.findById(id);
     Object.assign(user, updateUserDto);
-    
+
     return await this.userRepository.save(user);
   }
 }

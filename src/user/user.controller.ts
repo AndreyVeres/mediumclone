@@ -14,27 +14,27 @@ export class UserController {
 
   @Post('users')
   @UsePipes(new ValidationPipe())
-  async createUser(@Body('user') createUserDto: CreateUserDto): Promise<UserResponse> {
+  public async createUser(@Body('user') createUserDto: CreateUserDto): Promise<UserResponse> {
     const user = await this.userService.createUser(createUserDto);
     return this.userService.buildUserResponse(user);
   }
 
   @Post('users/login')
   @UsePipes(new ValidationPipe())
-  async login(@Body('user') loginUserDto: LoginUserDto): Promise<UserResponse> {
+  public async login(@Body('user') loginUserDto: LoginUserDto): Promise<UserResponse> {
     const user = await this.userService.login(loginUserDto);
     return this.userService.buildUserResponse(user);
   }
 
   @Get('user')
   @UseGuards(AuthGuard)
-  async currentUser(@User() user: UserEntity): Promise<UserResponse> {
+  public async currentUser(@User() user: UserEntity): Promise<UserResponse> {
     return this.userService.buildUserResponse(user);
   }
 
   @Put('user')
   @UseGuards(AuthGuard)
-  async updateCurrentUser(@Body('user') updateUserDto: UpdateUserDto, @User('id') currentUserId: number): Promise<UserResponse> {
+  public async updateCurrentUser(@Body('user') updateUserDto: UpdateUserDto, @User('id') currentUserId: number): Promise<UserResponse> {
     const updatedUser = await this.userService.updateUser(currentUserId, updateUserDto);
     return this.userService.buildUserResponse(updatedUser);
   }

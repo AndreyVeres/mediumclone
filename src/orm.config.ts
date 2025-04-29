@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { TagEntity } from '@app/tag/tag.entity';
 import { UserEntity } from './user/user.entity';
+import { ArticleEntity } from './article/article.entity';
 
 export default new DataSource({
   type: 'postgres',
@@ -9,8 +10,8 @@ export default new DataSource({
   username: 'postgres',
   password: 'admin',
   database: 'mediumclone',
-  entities: [TagEntity, UserEntity],
+  entities: [TagEntity, UserEntity, ArticleEntity],
   synchronize: false,
-  // migrations: ['src/migrations/**/*.ts'],
-  migrations: ['src/migrations'],
+  migrations: ['src/migrations/**/*.ts'],
+  // migrations: ['src/migrations'],
 });

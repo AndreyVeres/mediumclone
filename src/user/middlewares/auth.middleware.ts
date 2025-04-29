@@ -8,7 +8,7 @@ import { UserService } from '../user.service';
 export class AuthMiddleWare implements NestMiddleware {
   constructor(private readonly userService: UserService) {}
 
-  async use(req: RequestWithUser, res: Response, next: NextFunction) {
+  public async use(req: RequestWithUser, res: Response, next: NextFunction) {
     const token = req.headers['authorization']?.split(' ')[1];
 
     if (!token) {
