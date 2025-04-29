@@ -3,17 +3,17 @@ import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 export class CreateArticleDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  public readonly title: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  public readonly description: string;
 
   @IsString()
   @IsNotEmpty()
-  body: string;
+  public readonly body: string;
 
   @IsArray()
   @IsString({ each: true })
-  tagList: string[];
+  public readonly tagList: string[];
 }

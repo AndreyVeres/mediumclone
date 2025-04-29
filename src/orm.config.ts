@@ -12,6 +12,6 @@ export default new DataSource({
   database: 'mediumclone',
   entities: [TagEntity, UserEntity, ArticleEntity],
   synchronize: false,
-  migrations: ['src/migrations/**/*.ts'],
-  // migrations: ['src/migrations'],
+  // migrations: ['src/migrations/**/*.ts'],
+  migrations: ['src/migrations'],
 });
