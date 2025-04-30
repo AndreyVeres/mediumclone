@@ -18,8 +18,6 @@ export class UserService {
   ) {}
 
   public async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-
-    // TODO not working, can create user with same credentials
     const [existingEmail, existingUsername] = await Promise.all([
       this.userRepository.findOne({ where: { email: createUserDto.email } }),
       this.userRepository.findOne({
@@ -54,7 +52,7 @@ export class UserService {
     };
   }
 
-  public async login(userCredentials: LoginUserDto) {
+  public async login(userCredentials: LoginUserDto): Promise<UserEntity> {
     const user = await this.userRepository.findOne({
       where: { username: userCredentials.username },
       select: ['bio', 'email', 'id', 'image', 'password', 'username'],

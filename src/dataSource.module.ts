@@ -13,7 +13,7 @@ import { DataSource } from 'typeorm';
           console.log('Database connected successfully');
           return DataSourceInstance;
         } catch (error) {
-          console.log('Error connecting to database');
+          console.error('Error connecting to database');
           throw error;
         }
       },
