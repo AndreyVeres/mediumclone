@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleEntity } from './article.entity';
 import { UserEntity } from '@app/user/user.entity';
@@ -28,7 +28,7 @@ export class ArticleService {
     return { article };
   }
 
-  public async findBySlug(slug: string) {
+  public async findBySlug(slug: string): Promise<ArticleEntity> {
     const article = await this.articleRepository.findOne({ where: { slug } });
 
     if (!article) {
@@ -36,6 +36,16 @@ export class ArticleService {
     }
 
     return article;
+  }
+
+  public async deleteArticle(slug: string, userId: number) {
+    const article = await this.findBySlug(slug);
+
+    if (!article) throw new NotFoundException('Article does not exists');
+
+    if (article.author.id !== userId) throw new ForbiddenException('This user cant delete this article');
+
+    return await this.articleRepository.delete({ slug });
   }
 
   private buildSlug(title: string): string {
