@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ArticleResponse } from './types/articleResponse.interface';
 import slugify from 'slugify';
+import { UpdateArticleDto } from './dto/updateArticle.dto';
 
 @Injectable()
 export class ArticleService {
@@ -51,5 +52,20 @@ export class ArticleService {
   private buildSlug(title: string): string {
     const uniq = ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
     return slugify(title, { lower: true }) + '-' + uniq;
+  }
+
+  public async updateArticle(slug: string, userId: number, updateArticleDto: UpdateArticleDto) {
+    const article = await this.findBySlug(slug);
+
+    if (!article) throw new NotFoundException('Article does not exists');
+    if (article.author.id !== userId) throw new ForbiddenException('This user cant update this article');
+
+    Object.assign(article, updateArticleDto);
+
+    if (updateArticleDto.title && article.title !== updateArticleDto.title) {
+      article.slug = this.buildSlug(updateArticleDto.title);
+    }
+
+    return await this.articleRepository.save(article);
   }
 }
