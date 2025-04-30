@@ -18,6 +18,23 @@ export class ArticleService {
     private readonly dataSource: DataSource,
   ) {}
 
+  public async unfavorite(userId: number, slug: string) {
+    const article = await this.findBySlug(slug);
+    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['favorites'] });
+
+    const isAlreadyInFavorites = user.favorites.find((favorite) => favorite.id === article.id);
+
+    if (isAlreadyInFavorites) {
+      user.favorites = user.favorites.filter((favorite) => favorite.id !== article.id);
+      article.favoritesCount--;
+
+      await this.userRepository.save(user);
+      await this.articleRepository.save(article);
+    }
+
+    return article;
+  }
+
   public async favorite(userId: number, slug: string) {
     const article = await this.findBySlug(slug);
     const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['favorites'] });

@@ -49,11 +49,13 @@ export class ArticleController {
   @UseGuards(AuthGuard)
   public async favorite(@User('id') userId: number, @Param('slug') slug: string) {
     const article = await this.articleService.favorite(userId, slug);
-
     return this.articleService.buildArticleResponse(article);
   }
 
   @Delete(':slug/favorite')
   @UseGuards(AuthGuard)
-  public async unfavorite(@User() user: UserEntity, @Param('slug') slug: string) {}
+  public async unfavorite(@User('id') userId: number, @Param('slug') slug: string) {
+    const article = await this.articleService.unfavorite(userId, slug);
+    return this.articleService.buildArticleResponse(article);
+  }
 }
