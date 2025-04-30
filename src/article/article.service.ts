@@ -59,13 +59,23 @@ export class ArticleService {
       .leftJoinAndSelect('articles.author', 'author')
       .orderBy('articles.createdAt', 'DESC');
 
-    const { limit, offset, author, tag } = query;
+    const { limit, offset, author, tag, favorited } = query;
     const articlesCount = await queryBuilder.getCount();
 
     if (author) {
       queryBuilder.andWhere('author.username = :username', {
         username: author,
       });
+    }
+
+    if (favorited) {
+      const user = await this.userRepository.findOne({ where: { username: favorited }, relations: ['favorites'] });
+
+      const ids = user.favorites.map((f) => f.id);
+
+      if (ids.length) {
+        queryBuilder.andWhere('articles.id IN (:...ids)', { ids });
+      }
     }
 
     if (tag) {
