@@ -58,6 +58,7 @@ export class UserService {
       select: ['bio', 'email', 'id', 'image', 'password', 'username'],
     });
 
+    console.log(user);
     if (!user) throw new BadRequestException('invalid credentials');
 
     const isCorrectPassword = await compare(userCredentials.password, user.password);

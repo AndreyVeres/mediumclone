@@ -3,7 +3,7 @@ import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleEntity } from './article.entity';
 import { UserEntity } from '@app/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, getRepository, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { ArticleResponse } from './types/articleResponse.interface';
 import slugify from 'slugify';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
@@ -14,8 +14,26 @@ import { QueryFilters } from './types/queryFilters.type';
 export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity) private readonly articleRepository: Repository<ArticleEntity>,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     private readonly dataSource: DataSource,
   ) {}
+
+  public async favorite(userId: number, slug: string) {
+    const article = await this.findBySlug(slug);
+    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['favorites'] });
+
+    const isAlreadyInFavorites = user.favorites.find((favorite) => favorite.id === article.id);
+
+    if (!isAlreadyInFavorites) {
+      user.favorites.push(article);
+      article.favoritesCount++;
+
+      await this.userRepository.save(user);
+      await this.articleRepository.save(article);
+    }
+
+    return article;
+  }
 
   public async findAll(userId: number, query: QueryFilters): Promise<ArticlesResponseInterface> {
     const queryBuilder = this.dataSource
