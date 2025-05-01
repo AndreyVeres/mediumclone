@@ -12,6 +12,10 @@ export class Seed1745850202033 implements MigrationInterface {
     );
 
     await queryRunner.query(
+      `INSERT INTO users (username, email, password) VALUES ('follower', 'follower@gmail.com', '$2b$10$TER6vsZGFbdbgjmvDDnnY.3GE5pDZ7BONxYN7jZxb39bPj0T7CBny')`,
+    );
+
+    await queryRunner.query(
       `INSERT INTO articles 
       (title, description, body, slug, "tagList", "authorId") 
       VALUES 
@@ -25,5 +29,5 @@ export class Seed1745850202033 implements MigrationInterface {
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(_: QueryRunner): Promise<void> {}
 }
