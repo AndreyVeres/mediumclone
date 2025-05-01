@@ -7,13 +7,14 @@ import { UserEntity } from '@app/user/user.entity';
 import { ArticleResponse } from './types/articleResponse.interface';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
+import { QueryFilters } from './types/queryFilters.type';
 
 @Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
-  async findAll(@User('id') currentUserId: number, @Query() query: any): Promise<ArticlesResponseInterface> {
+  async findAll(@User('id') currentUserId: number, @Query() query: QueryFilters): Promise<ArticlesResponseInterface> {
     return await this.articleService.findAll(currentUserId, query);
   }
 
