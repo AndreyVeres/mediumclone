@@ -1,5 +1,6 @@
 import { UserEntity } from '@app/user/user.entity';
-import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { CommentEntity } from './comment.entity';
 
 @Entity('articles')
 export class ArticleEntity {
@@ -22,7 +23,7 @@ export class ArticleEntity {
   createdAt: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date;
+  updatedAt: Date; 
 
   @BeforeUpdate()
   updateTimeStamp() {
@@ -34,6 +35,10 @@ export class ArticleEntity {
 
   @Column({ default: 0 })
   favoritesCount: number;
+
   @ManyToOne(() => UserEntity, (user) => user.articles, { eager: true })
   author: UserEntity;
+
+  @OneToMany(() => CommentEntity, (comment) => comment.article, { cascade: true })
+  comments: CommentEntity[];
 }

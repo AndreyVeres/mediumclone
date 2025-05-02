@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { UserEntity } from '@app/user/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ArticleEntity } from './article.entity';
 
 @Entity('comments')
 export class CommentEntity {
@@ -14,9 +16,9 @@ export class CommentEntity {
   @Column()
   body: string;
 
-  @Column()
-  authorId: number;
+  @ManyToOne(() => UserEntity, (user) => user.comments, { eager: true, onDelete: 'CASCADE' })
+  author: UserEntity;
 
-  @Column()
-  articleId: number;
+  @ManyToOne(() => ArticleEntity, (article) => article.comments, { onDelete: 'CASCADE' })
+  article: ArticleEntity;
 }

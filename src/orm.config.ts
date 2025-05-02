@@ -5,6 +5,7 @@ import { ArticleEntity } from './article/article.entity';
 import { FollowEntity } from './profile/follow.entity';
 import { CommentEntity } from './article/comment.entity';
 
+
 export default new DataSource({
   type: 'postgres',
   host: 'localhost',

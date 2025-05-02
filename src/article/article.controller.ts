@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { AuthGuard } from '@app/user/guards/auth.guard';
 import { User } from '@app/user/decorators/user.decorator';
@@ -9,6 +9,7 @@ import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { ArticlesResponse } from './types/articlesResponse.interface';
 import { QueryFilters } from './types/queryFilters.type';
 import { AppValidationPipe } from '@app/shared/validation.pipe';
+import { CreateCommentDto } from './dto/createCommentDto';
 
 @Controller('articles')
 export class ArticleController {
@@ -31,6 +32,18 @@ export class ArticleController {
   public async create(@User() user: UserEntity, @Body('article') createArticleDto: CreateArticleDto): Promise<ArticleResponse> {
     const article = await this.articleService.create(user, createArticleDto);
     return this.articleService.buildArticleResponse(article);
+  }
+
+  @Post(':slug/comments')
+  @UseGuards(AuthGuard)
+  public async createComment(
+    @User('id') userId: number,
+    @Body('comment', new AppValidationPipe()) createCommentDto: CreateCommentDto,
+    @Param('slug') slug: string,
+  ) {
+    const comment = await this.articleService.createComment(slug, createCommentDto, userId);
+
+    return { comment };
   }
 
   @Get(':slug')
@@ -68,8 +81,8 @@ export class ArticleController {
   }
 
   @Get(':slug/comments')
-  public async getComments(@Param('slug') slug: string) {
-    const comments = await this.articleService.getArticleComments(slug);
+  public async getComments(@Param('slug') slug: string, @User('id') userId: number) {
+    const comments = await this.articleService.getArticleComments(slug, userId);
 
     return comments;
   }

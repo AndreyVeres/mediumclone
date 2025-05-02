@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, Body } from '@nestjs/common';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleEntity } from './article.entity';
 import { UserEntity } from '@app/user/user.entity';
@@ -10,6 +10,7 @@ import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { ArticlesResponse } from './types/articlesResponse.interface';
 import { QueryFilters } from './types/queryFilters.type';
 import { FollowEntity } from '@app/profile/follow.entity';
+import { ProfileService } from '@app/profile/profile.service';
 import { CommentEntity } from './comment.entity';
 
 @Injectable()
@@ -19,7 +20,7 @@ export class ArticleService {
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(FollowEntity) private readonly followRepository: Repository<FollowEntity>,
     @InjectRepository(CommentEntity) private readonly commentsRepository: Repository<CommentEntity>,
-
+    private readonly profileService: ProfileService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -217,15 +218,33 @@ export class ArticleService {
     return await this.articleRepository.save(article);
   }
 
-  public async getArticleComments(slug: string) {
+  public async getArticleComments(slug: string, userId: number) {
     const article = await this.articleRepository.findOne({ where: { slug } });
 
-    if (!article) throw new NotFoundException('Article not found');
-
-    return await this.commentsRepository.find({
+    const commentsEntities = await this.commentsRepository.find({
       where: {
-        articleId: article.id,
+        article: { id: article.id },
       },
     });
+
+    const profiles = await Promise.all(
+      commentsEntities.map((c) => {
+        return this.profileService.getProfile(c.author.username, userId);
+      }),
+    );
+
+    return commentsEntities;
+  }
+
+  public async createComment(slug: string, createCommentDto: any, userId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const article = await this.articleRepository.findOne({ where: { slug } });
+
+    const comment = new CommentEntity();
+    comment.body = createCommentDto.body;
+    comment.author = user;
+    comment.article = article;
+
+    return await this.commentsRepository.save(comment);
   }
 }

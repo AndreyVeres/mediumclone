@@ -5,10 +5,12 @@ import { validate, ValidationError } from 'class-validator';
 export class AppValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
     const object = plainToClass(metadata.metatype, value);
+
+    console.log(object ,'<<<<<<object')
+
     const errors = await validate(object);
 
-    console.log(errors);
-
+    console.log(errors, '<<,');
     if (!errors.length) return value;
 
     throw new UnprocessableEntityException({ errors: this.buildErrors(errors) });
