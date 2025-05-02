@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, Query } from '@nestjs/common';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleEntity } from './article.entity';
 import { UserEntity } from '@app/user/user.entity';
@@ -7,14 +7,17 @@ import { DataSource, Repository } from 'typeorm';
 import { ArticleResponse } from './types/articleResponse.interface';
 import slugify from 'slugify';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
-import { ArticlesResponseInterface } from './types/articlesResponse.interface';
+import { ArticlesResponse } from './types/articlesResponse.interface';
 import { QueryFilters } from './types/queryFilters.type';
+import { FollowEntity } from '@app/profile/follow.entity';
 
 @Injectable()
 export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity) private readonly articleRepository: Repository<ArticleEntity>,
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(FollowEntity) private readonly followRepository: Repository<FollowEntity>,
+
     private readonly dataSource: DataSource,
   ) {}
 
@@ -52,7 +55,39 @@ export class ArticleService {
     return article;
   }
 
-  public async findAll(userId: number, query: QueryFilters): Promise<ArticlesResponseInterface> {
+  public async getFeed(userId: number, query: QueryFilters): Promise<ArticlesResponse> {
+    const follows = await this.followRepository.find({ where: { followerId: userId } });
+
+    if (!follows.length) {
+      return { articles: [], articlesCount: 0 };
+    }
+
+    const followsUsersIds = follows.map((f) => f.followingId);
+
+    const queryBuilder = this.dataSource
+      .getRepository(ArticleEntity)
+      .createQueryBuilder('articles')
+      .leftJoinAndSelect('articles.author', 'author')
+      .where('articles.authorId IN (:...ids)', { ids: followsUsersIds });
+
+    const articlesCount = await queryBuilder.getCount();
+
+    const { offset, limit } = query;
+
+    if (offset) {
+      queryBuilder.offset(Number(offset));
+    }
+
+    if (limit) {
+      queryBuilder.limit(Number(limit));
+    }
+
+    const articles = await queryBuilder.getMany();
+
+    return { articles, articlesCount };
+  }
+
+  public async findAll(userId: number, query: QueryFilters): Promise<ArticlesResponse> {
     const queryBuilder = this.dataSource
       .getRepository(ArticleEntity)
       .createQueryBuilder('articles')

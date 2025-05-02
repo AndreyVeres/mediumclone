@@ -6,15 +6,21 @@ import { CreateArticleDto } from './dto/createArticle.dto';
 import { UserEntity } from '@app/user/user.entity';
 import { ArticleResponse } from './types/articleResponse.interface';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
-import { ArticlesResponseInterface } from './types/articlesResponse.interface';
+import { ArticlesResponse } from './types/articlesResponse.interface';
 import { QueryFilters } from './types/queryFilters.type';
 
 @Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
+  @Get('feed')
+  @UseGuards(AuthGuard)
+  async getFeed(@User('id') userId: number, @Query() query: QueryFilters) {
+    return this.articleService.getFeed(userId, query);
+  }
+
   @Get()
-  async findAll(@User('id') currentUserId: number, @Query() query: QueryFilters): Promise<ArticlesResponseInterface> {
+  async findAll(@User('id') currentUserId: number, @Query() query: QueryFilters): Promise<ArticlesResponse> {
     return await this.articleService.findAll(currentUserId, query);
   }
 
