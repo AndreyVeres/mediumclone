@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, Query } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleEntity } from './article.entity';
 import { UserEntity } from '@app/user/user.entity';
@@ -10,6 +10,7 @@ import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { ArticlesResponse } from './types/articlesResponse.interface';
 import { QueryFilters } from './types/queryFilters.type';
 import { FollowEntity } from '@app/profile/follow.entity';
+import { CommentEntity } from './comment.entity';
 
 @Injectable()
 export class ArticleService {
@@ -17,6 +18,7 @@ export class ArticleService {
     @InjectRepository(ArticleEntity) private readonly articleRepository: Repository<ArticleEntity>,
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(FollowEntity) private readonly followRepository: Repository<FollowEntity>,
+    @InjectRepository(CommentEntity) private readonly commentsRepository: Repository<CommentEntity>,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -213,5 +215,17 @@ export class ArticleService {
     }
 
     return await this.articleRepository.save(article);
+  }
+
+  public async getArticleComments(slug: string) {
+    const article = await this.articleRepository.findOne({ where: { slug } });
+
+    if (!article) throw new NotFoundException('Article not found');
+
+    return await this.commentsRepository.find({
+      where: {
+        articleId: article.id,
+      },
+    });
   }
 }

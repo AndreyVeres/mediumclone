@@ -27,6 +27,27 @@ export class Seed1745850202033 implements MigrationInterface {
         VALUES 
         ('second article title', 'second article description', 'second article body', 'second-article-slug', 'dragons,react' , 2)`,
     );
+
+    await queryRunner.query(
+      `INSERT INTO comments 
+        (body, "authorId", "articleId") 
+        VALUES 
+        ('NICE COMMENTS', 2 , 1)`,
+    );
+
+    await queryRunner.query(
+      `INSERT INTO comments 
+        (body, "authorId", "articleId") 
+        VALUES 
+        ('NICE COMMENTS 2', 2 , 1)`,
+    );
+
+    await queryRunner.query(
+      `INSERT INTO comments 
+        (body, "authorId", "articleId") 
+        VALUES 
+        ('NICE SECOND COMMENTS', 2 , 2)`,
+    );
   }
 
   public async down(_: QueryRunner): Promise<void> {}

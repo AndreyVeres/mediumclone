@@ -66,4 +66,11 @@ export class ArticleController {
     const article = await this.articleService.unfavorite(userId, slug);
     return this.articleService.buildArticleResponse(article);
   }
+
+  @Get(':slug/comments')
+  public async getComments(@Param('slug') slug: string) {
+    const comments = await this.articleService.getArticleComments(slug);
+
+    return comments;
+  }
 }

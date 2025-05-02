@@ -3,6 +3,7 @@ import { TagEntity } from '@app/tag/tag.entity';
 import { UserEntity } from './user/user.entity';
 import { ArticleEntity } from './article/article.entity';
 import { FollowEntity } from './profile/follow.entity';
+import { CommentEntity } from './article/comment.entity';
 
 export default new DataSource({
   type: 'postgres',
@@ -11,8 +12,8 @@ export default new DataSource({
   username: 'postgres',
   password: 'admin',
   database: 'mediumclone',
-  entities: [TagEntity, UserEntity, ArticleEntity, FollowEntity],
+  entities: [TagEntity, UserEntity, ArticleEntity, FollowEntity, CommentEntity],
   synchronize: false,
-  // migrations: ['src/migrations/**/*.ts'],
-  migrations: ['src/migrations'],
+  // migrations: ['src/migrations/**/*.ts']
+  migrations: ['src/migrations']
 });
