@@ -8,6 +8,7 @@ import { ArticleResponse } from './types/articleResponse.interface';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { ArticlesResponse } from './types/articlesResponse.interface';
 import { QueryFilters } from './types/queryFilters.type';
+import { AppValidationPipe } from '@app/shared/validation.pipe';
 
 @Controller('articles')
 export class ArticleController {
@@ -26,7 +27,7 @@ export class ArticleController {
 
   @Post()
   @UseGuards(AuthGuard)
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new AppValidationPipe())
   public async create(@User() user: UserEntity, @Body('article') createArticleDto: CreateArticleDto): Promise<ArticleResponse> {
     const article = await this.articleService.create(user, createArticleDto);
     return this.articleService.buildArticleResponse(article);
@@ -46,7 +47,7 @@ export class ArticleController {
 
   @Put(':slug')
   @UseGuards(AuthGuard)
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new AppValidationPipe())
   public async updateArticle(@User('id') userId: number, @Param('slug') slug: string, @Body('article') updateArticleDto: UpdateArticleDto) {
     const article = await this.articleService.updateArticle(slug, userId, updateArticleDto);
     return this.articleService.buildArticleResponse(article);
