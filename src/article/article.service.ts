@@ -221,6 +221,8 @@ export class ArticleService {
   public async getArticleComments(slug: string, userId: number) {
     const article = await this.articleRepository.findOne({ where: { slug } });
 
+    if (!article) throw new BadRequestException('Article not found');
+
     const commentsEntities = await this.commentsRepository.find({
       where: {
         article: { id: article.id },
@@ -233,7 +235,12 @@ export class ArticleService {
       }),
     );
 
-    return commentsEntities;
+    return {
+      comments: commentsEntities.map((comment, idx) => ({
+        ...comment,
+        author: profiles[idx],
+      })),
+    };
   }
 
   public async createComment(slug: string, createCommentDto: any, userId: number) {

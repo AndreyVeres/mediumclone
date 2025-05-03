@@ -1,10 +1,4 @@
 import { DataSource } from 'typeorm';
-import { ArticleEntity } from './article/article.entity';
-import { TagEntity } from './tag/tag.entity';
-import { UserEntity } from './user/user.entity';
-import { FollowEntity } from './profile/follow.entity';
-import { CommentEntity } from './article/comment.entity';
-
 
 export default new DataSource({
   type: 'postgres',
@@ -13,8 +7,7 @@ export default new DataSource({
   username: 'postgres',
   password: 'admin',
   database: 'mediumclone',
-  entities: [TagEntity, UserEntity, ArticleEntity, FollowEntity, CommentEntity],
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
-  migrations: ['src/seed/**/*.ts'],
-  //   migrations: ['src/seed'],
+  migrations: [__dirname + '/seed/**/*{.ts,.js}'],
 });

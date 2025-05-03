@@ -23,7 +23,7 @@ export class ArticleEntity {
   createdAt: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date; 
+  updatedAt: Date;
 
   @BeforeUpdate()
   updateTimeStamp() {
