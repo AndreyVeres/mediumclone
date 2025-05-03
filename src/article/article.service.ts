@@ -254,4 +254,13 @@ export class ArticleService {
 
     return await this.commentsRepository.save(comment);
   }
+
+  public async deleteComment(slug: string, commentId: number, userId: number) {
+    const article = await this.articleRepository.findOne({ where: { slug }, relations: ['comments'] });
+    if (!article) throw new BadRequestException('Article not found');
+
+    const commentIdx = article.comments.findIndex((c) => c.id === commentId);
+    article.comments.splice(commentIdx, 1);
+    return await this.articleRepository.save(article);
+  }
 }

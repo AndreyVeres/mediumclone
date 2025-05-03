@@ -86,4 +86,9 @@ export class ArticleController {
 
     return comments;
   }
+
+  @Delete(':slug/comments/:id')
+  public async deleteComment(@Param('slug') slug: string, @Param('id') commentId: number, @User('id') userId: number) {
+    return await this.articleService.deleteComment(slug, commentId, userId);
+  }
 }
