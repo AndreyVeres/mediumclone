@@ -1,0 +1,46 @@
+networks:
+  app_network:
+    driver: bridge
+
+services:
+  db:
+    image: postgres
+    restart: always
+    networks:
+      - app_network
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+    container_name: mediumclone
+    volumes:
+      - pg-volume:/var/lib/postgresql/data
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - app_network
+    container_name: nest-app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - PORT=${APP_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_DATABASE=${POSTGRES_DB}
+      - DB_HOST=${DB_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: sh -c "npm run db:migrate && npm run db:seed & npm run start:dev"
+
+volumes:
+  pg-volume:

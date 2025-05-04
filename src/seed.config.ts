@@ -5,10 +5,10 @@ config();
 export default new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST,
-  port: +process.env.DB_PORT,
-  username: process.env.DB_USERNAME,
+  port: +process.env.POSTGRES_PORT,
+  username: process.env.POSTGRES_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  database: process.env.POSTGRES_DB,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrations: [__dirname + '/seed/**/*{.ts,.js}'],

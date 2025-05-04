@@ -8,12 +8,12 @@ import { DataSource } from 'typeorm';
     {
       provide: DataSource,
       useFactory: async () => {
-        try {
+        try { 
           await DataSourceInstance.initialize();
           console.log('Database connected successfully');
           return DataSourceInstance;
         } catch (error) {
-          console.error('Error connecting to database');
+          console.error('Error connecting to database: ', error);
           throw error;
         }
       },
