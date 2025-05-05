@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, Body } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleEntity } from './article.entity';
 import { UserEntity } from '@app/user/user.entity';
@@ -257,9 +257,11 @@ export class ArticleService {
 
   public async deleteComment(slug: string, commentId: number, userId: number) {
     const article = await this.articleRepository.findOne({ where: { slug }, relations: ['comments'] });
-    if (!article) throw new BadRequestException('Article not found');
 
+    if (!article) throw new BadRequestException('Article not found');
+    console.log(userId, 'add check comment author');
     const commentIdx = article.comments.findIndex((c) => c.id === commentId);
+
     article.comments.splice(commentIdx, 1);
     return await this.articleRepository.save(article);
   }

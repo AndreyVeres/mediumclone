@@ -3,7 +3,6 @@ import { hash } from 'bcrypt';
 import { ArticleEntity } from '@app/article/article.entity';
 import { CommentEntity } from '@app/article/comment.entity';
 
-
 @Entity('users')
 export class UserEntity {
   @PrimaryGeneratedColumn()
@@ -36,6 +35,6 @@ export class UserEntity {
   @JoinTable()
   favorites: ArticleEntity[];
 
-  @OneToMany(() => CommentEntity, (comment) => comment.author )
+  @OneToMany(() => CommentEntity, (comment) => comment.author)
   comments: CommentEntity[];
 }

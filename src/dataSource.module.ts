@@ -8,7 +8,7 @@ import { DataSource } from 'typeorm';
     {
       provide: DataSource,
       useFactory: async () => {
-        try { 
+        try {
           await DataSourceInstance.initialize();
           console.log('Database connected successfully');
           return DataSourceInstance;

@@ -8,7 +8,7 @@ export default new DataSource({
   port: +process.env.POSTGRES_PORT,
   username: process.env.POSTGRES_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.POSTGRES_DB, 
+  database: process.env.POSTGRES_DB,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

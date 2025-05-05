@@ -50,5 +50,5 @@ export class Seed1745850202033 implements MigrationInterface {
     );
   }
 
-  public async down(_: QueryRunner): Promise<void> {}
+  public async down(): Promise<void> {}
 }
