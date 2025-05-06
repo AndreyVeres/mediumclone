@@ -1,18 +1,37 @@
 import { applyDecorators, INestApplication } from '@nestjs/common';
-import { ApiBody, ApiExtraModels, ApiOkResponse, DocumentBuilder, getSchemaPath, SwaggerModule } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiOperation,
+  DocumentBuilder,
+  getSchemaPath,
+  SwaggerModule,
+} from '@nestjs/swagger';
 
 interface AppSwaggerResponseProps {
   wrapName?: string;
   model?: any;
   type?: string;
   apiBody?: any;
+  auth?: boolean;
+  summary?: string;
 }
 
-export function AppSwagger({ wrapName, model, type, apiBody }: AppSwaggerResponseProps) {
+export function AppSwagger({ wrapName, model, type, apiBody, summary, auth = false }: AppSwaggerResponseProps) {
   const decorators: Array<ClassDecorator | MethodDecorator | PropertyDecorator> = [];
 
   if (apiBody) {
     decorators.push(ApiBody({ type: apiBody }));
+  }
+
+  if (auth) {
+    decorators.push(ApiBearerAuth());
+  }
+
+  if (summary) {
+    decorators.push(ApiOperation({ summary }));
   }
 
   return applyDecorators(

@@ -8,7 +8,7 @@ import { UserEntity } from './user.entity';
 import { AuthGuard } from './guards/auth.guard';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { AppValidationPipe } from '@app/shared/validation.pipe';
-import { ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiHeaders, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AppSwagger } from '@app/swagger.config';
 
 @ApiTags('user')
@@ -20,8 +20,8 @@ export class UserController {
     wrapName: 'user',
     model: UserEntity,
     apiBody: CreateUserDto,
+    summary: 'Regisration',
   })
-  @ApiOperation({ summary: 'Regisration' })
   @Post('users')
   @UsePipes(new AppValidationPipe())
   public async createUser(@Body('user') createUserDto: CreateUserDto): Promise<UserResponse> {
@@ -29,8 +29,7 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
-  @AppSwagger({ wrapName: 'user', model: UserEntity })
-  @ApiOperation({ summary: 'Login' })
+  @AppSwagger({ wrapName: 'user', model: UserEntity, summary: 'Login' })
   @Post('users/login')
   @UsePipes(new AppValidationPipe())
   public async login(@Body('user') loginUserDto: LoginUserDto): Promise<UserResponse> {
@@ -38,7 +37,13 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
-  @ApiOperation({ summary: 'Get user by token' })
+  @AppSwagger({
+    wrapName: 'user',
+    model: UserEntity,
+    auth: true,
+    summary: 'Get current User',
+  })
+  @ApiHeader({ name: 'Authentication', example: 'Bearer token' })
   @Get('user')
   @UseGuards(AuthGuard)
   public async currentUser(@User() user: UserEntity): Promise<UserResponse> {
