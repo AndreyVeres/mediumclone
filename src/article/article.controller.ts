@@ -20,7 +20,7 @@ import { AppSwagger } from '@app/swagger.config';
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
-  @AppSwagger({ property: 'article', model: ArticleEntity })
+  @AppSwagger({ wrapName: 'article', model: ArticleEntity })
   @Get('feed')
   @UseGuards(AuthGuard)
   async getFeed(@User('id') userId: number, @Query() query: QueryFilters) {

@@ -8,16 +8,19 @@ import { UserEntity } from './user.entity';
 import { AuthGuard } from './guards/auth.guard';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { AppValidationPipe } from '@app/shared/validation.pipe';
-import {  ApiOperation,  ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AppSwagger } from '@app/swagger.config';
-
 
 @ApiTags('user')
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @AppSwagger({ property: 'user', model: UserEntity, apiBody: CreateUserDto })
+  @AppSwagger({
+    wrapName: 'user',
+    model: UserEntity,
+    apiBody: CreateUserDto,
+  })
   @ApiOperation({ summary: 'Regisration' })
   @Post('users')
   @UsePipes(new AppValidationPipe())
@@ -26,7 +29,7 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
-  @AppSwagger({ property: 'user', model: UserEntity })
+  @AppSwagger({ wrapName: 'user', model: UserEntity })
   @ApiOperation({ summary: 'Login' })
   @Post('users/login')
   @UsePipes(new AppValidationPipe())

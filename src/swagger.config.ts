@@ -2,24 +2,30 @@ import { applyDecorators, INestApplication } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiOkResponse, DocumentBuilder, getSchemaPath, SwaggerModule } from '@nestjs/swagger';
 
 interface AppSwaggerResponseProps {
-  property?: string;
+  wrapName?: string;
   model?: any;
   type?: string;
   apiBody?: any;
 }
 
-export function AppSwagger({ property, model, type, apiBody }: AppSwaggerResponseProps) {
+export function AppSwagger({ wrapName, model, type, apiBody }: AppSwaggerResponseProps) {
+  const decorators: Array<ClassDecorator | MethodDecorator | PropertyDecorator> = [];
+
+  if (apiBody) {
+    decorators.push(ApiBody({ type: apiBody }));
+  }
+
   return applyDecorators(
     ApiExtraModels(model),
     ApiOkResponse({
       schema: {
         type,
         properties: {
-          [property]: { $ref: getSchemaPath(model) },
+          [wrapName]: { $ref: getSchemaPath(model) },
         },
       },
     }),
-    ApiBody({ type: apiBody }),
+    ...decorators,
   );
 }
 
