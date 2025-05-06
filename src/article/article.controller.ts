@@ -10,11 +10,17 @@ import { ArticlesResponse } from './types/articlesResponse.interface';
 import { QueryFilters } from './types/queryFilters.type';
 import { AppValidationPipe } from '@app/shared/validation.pipe';
 import { CreateCommentDto } from './dto/createCommentDto';
+import { ApiTags } from '@nestjs/swagger';
 
+import { ArticleEntity } from './article.entity';
+import { AppSwagger } from '@app/swagger.config';
+
+@ApiTags('articles')
 @Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
+  @AppSwagger({ property: 'article', model: ArticleEntity })
   @Get('feed')
   @UseGuards(AuthGuard)
   async getFeed(@User('id') userId: number, @Query() query: QueryFilters) {

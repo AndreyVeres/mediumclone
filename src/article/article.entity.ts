@@ -1,6 +1,7 @@
 import { UserEntity } from '@app/user/user.entity';
 import { BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CommentEntity } from './comment.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('articles')
 export class ArticleEntity {
@@ -10,12 +11,15 @@ export class ArticleEntity {
   @Column()
   slug: string;
 
+  @ApiProperty()
   @Column()
   title: string;
 
+  @ApiProperty()
   @Column({ default: '' })
   description: string;
 
+  @ApiProperty()
   @Column({ default: '' })
   body: string;
 

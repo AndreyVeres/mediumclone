@@ -2,21 +2,26 @@ import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToMany, Primary
 import { hash } from 'bcrypt';
 import { ArticleEntity } from '@app/article/article.entity';
 import { CommentEntity } from '@app/article/comment.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('users')
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @Column()
   email: string;
 
+  @ApiProperty()
   @Column({ default: '' })
   bio: string;
 
+  @ApiProperty()
   @Column()
   username: string;
 
+  @ApiProperty()
   @Column({ default: '' })
   image: string;
 
@@ -37,4 +42,7 @@ export class UserEntity {
 
   @OneToMany(() => CommentEntity, (comment) => comment.author)
   comments: CommentEntity[];
+
+  @ApiProperty()
+  token: string;
 }
