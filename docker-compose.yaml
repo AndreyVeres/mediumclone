@@ -40,7 +40,6 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: sh -c "npm run db:migrate && npm run db:seed & npm run start:dev"
 
 volumes:
   pg-volume:
