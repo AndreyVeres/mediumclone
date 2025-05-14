@@ -8,7 +8,7 @@ import { ArticleResponse } from './types/articleResponse.interface';
 import slugify from 'slugify';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { ArticlesResponse } from './types/articlesResponse.interface';
-import { QueryFilters } from './types/queryFilters.type';
+import { QueryFilters, SortType } from './types/queryFilters.type';
 import { FollowEntity } from '@app/profile/follow.entity';
 import { ProfileService } from '@app/profile/profile.service';
 import { CommentEntity } from './comment.entity';
@@ -91,20 +91,28 @@ export class ArticleService {
   }
 
   public async findAll(userId: number, query: QueryFilters): Promise<ArticlesResponse> {
+    const { limit, offset, author, tag, favorited  , search, sortOrder = 'DESC' } = query;
     const queryBuilder = this.dataSource
       .getRepository(ArticleEntity)
       .createQueryBuilder('articles')
       .leftJoinAndSelect('articles.author', 'author')
-      .orderBy('articles.createdAt', 'DESC');
+      .orderBy('articles.createdAt', sortOrder as SortType);
 
-    const { limit, offset, author, tag, favorited } = query;
     const articlesCount = await queryBuilder.getCount();
 
+    if (search) {
+      queryBuilder.andWhere('articles.title ILIKE :title', {
+        title: `%${search}%`,
+      });
+    }
+
+    
     if (author) {
       queryBuilder.andWhere('author.username = :username', {
         username: author,
       });
     }
+
 
     if (favorited) {
       const user = await this.userRepository.findOne({ where: { username: favorited }, relations: ['favorites'] });
